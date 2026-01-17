@@ -14,6 +14,12 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_community.document_loaders import PyPDFLoader
 
 
+def is_streamlit_cloud() -> bool:
+    return os.getenv("STREAMLIT_RUNTIME_ENV") == "cloud"
+
+
+
+
 # ----------------------------
 # Page Config
 # ----------------------------
@@ -59,9 +65,20 @@ def chunk_docs(docs: List, chunk_size: int = 800, chunk_overlap: int = 120) -> L
     )
     return splitter.split_documents(docs)
 
+def get_embeddings():
+    if is_streamlit_cloud():
+        from langchain_community.embeddings import HuggingFaceEmbeddings
+        return HuggingFaceEmbeddings(
+            model_name="sentence-transformers/all-MiniLM-L6-v2"
+        )
+    else:
+        from langchain_ollama import OllamaEmbeddings
+        return OllamaEmbeddings(model="nomic-embed-text")  # change model if you use another
 
-def build_vectorstore(chunks: List) -> FAISS:
-    embeddings = OllamaEmbeddings(model="nomic-embed-text")
+
+
+def build_vectorstore(chunks):
+    embeddings = get_embeddings()
     return FAISS.from_documents(chunks, embeddings)
 
 
