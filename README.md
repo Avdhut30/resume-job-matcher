@@ -33,7 +33,6 @@ resume-job-matcher/
 
 Follow these steps to run the project on your local machine:
 
-```bash
 git clone https://github.com/your-username/resume-job-matcher.git
 cd resume-job-matcher
 python -m venv venv
@@ -44,12 +43,10 @@ streamlit run app.py
 
 ## 📊 Output
 
-- Resume–JD Match Score
+- Resume–JD Match Score  
+- Missing skills  
+- Keyword overlap analysis  
 
- - Missing skills
-
-- Keyword overlap analysis
 
 ## 👨‍💻 Author
-
 Avdhut Shinde
