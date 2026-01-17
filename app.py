@@ -15,14 +15,6 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_community.document_loaders import PyPDFLoader
 
 
-st.caption(f"Runtime env: {os.getenv('STREAMLIT_RUNTIME_ENV')} | backend: {os.getenv('EMBEDDINGS_BACKEND')}")
-
-def is_streamlit_cloud() -> bool:
-    return os.getenv("STREAMLIT_RUNTIME_ENV") == "cloud"
-
-
-
-
 # ----------------------------
 # Page Config
 # ----------------------------
@@ -35,7 +27,7 @@ st.set_page_config(
 st.title("📄 Resume–Job Matcher (AI)")
 st.success("🟢 Local AI Mode (Ollama • No API Keys • 100% Offline)")
 st.caption("Upload a resume PDF + paste a Job Description → match score, skill gap, improvement plan, bullets + sample resume.")
-
+st.caption(f"Runtime env: {os.getenv('STREAMLIT_RUNTIME_ENV')} | backend: {os.getenv('EMBEDDINGS_BACKEND')}")
 
 # ----------------------------
 # Helpers
@@ -59,6 +51,9 @@ def load_pdf(file) -> List:
 
     return docs
 
+def is_streamlit_cloud() -> bool:
+    return os.getenv("STREAMLIT_RUNTIME_ENV") == "cloud"
+
 
 def chunk_docs(docs: List, chunk_size: int = 800, chunk_overlap: int = 120) -> List:
     splitter = RecursiveCharacterTextSplitter(
@@ -68,8 +63,6 @@ def chunk_docs(docs: List, chunk_size: int = 800, chunk_overlap: int = 120) -> L
     )
     return splitter.split_documents(docs)
 
-import os
-import streamlit as st
 
 def get_embeddings():
     backend = os.getenv("EMBEDDINGS_BACKEND", "").strip().lower()
