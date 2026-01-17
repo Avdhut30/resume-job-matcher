@@ -1,5 +1,6 @@
 import os
 import re
+import streamlit as st
 import json
 import tempfile
 from datetime import datetime
@@ -13,6 +14,8 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_community.document_loaders import PyPDFLoader
 
+
+st.caption(f"Runtime env: {os.getenv('STREAMLIT_RUNTIME_ENV')} | backend: {os.getenv('EMBEDDINGS_BACKEND')}")
 
 def is_streamlit_cloud() -> bool:
     return os.getenv("STREAMLIT_RUNTIME_ENV") == "cloud"
@@ -65,15 +68,28 @@ def chunk_docs(docs: List, chunk_size: int = 800, chunk_overlap: int = 120) -> L
     )
     return splitter.split_documents(docs)
 
+import os
+import streamlit as st
+
 def get_embeddings():
-    if is_streamlit_cloud():
+    backend = os.getenv("EMBEDDINGS_BACKEND", "").strip().lower()
+
+    # Force HuggingFace on Streamlit Cloud or when backend says hf
+    if os.getenv("STREAMLIT_RUNTIME_ENV") == "cloud" or backend == "hf":
         from langchain_community.embeddings import HuggingFaceEmbeddings
-        return HuggingFaceEmbeddings(
-            model_name="sentence-transformers/all-MiniLM-L6-v2"
-        )
-    else:
+        st.info("Embeddings: HuggingFace (cloud-safe)")
+        return HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+
+    # Local Ollama only (and only if user explicitly sets backend=ollama)
+    if backend == "ollama":
         from langchain_ollama import OllamaEmbeddings
-        return OllamaEmbeddings(model="nomic-embed-text")  # change model if you use another
+        st.info("Embeddings: Ollama (local)")
+        return OllamaEmbeddings(model="nomic-embed-text")
+
+    # Default fallback (safe)
+    from langchain_community.embeddings import HuggingFaceEmbeddings
+    st.info("Embeddings: HuggingFace (default)")
+    return HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
 
 
