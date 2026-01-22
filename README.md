@@ -33,7 +33,7 @@ resume-job-matcher/
 
 Follow these steps to run the project on your local machine:
 
-git clone https://github.com/your-username/resume-job-matcher.git
+git clone https://github.com/Avdhut30/resume-job-matcher.git
 cd resume-job-matcher
 python -m venv venv
 venv\Scripts\activate
